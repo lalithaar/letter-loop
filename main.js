@@ -27,7 +27,7 @@ function collectEmailResponses() {
   const participantsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Participants");
   
   // Load participants data from Participants sheet
-  const participantsData = participantsSheet.getRange('A2:B').getValues(); // Assuming participants are in columns A (email) and B (name)
+  const participantsData = participantsSheet.getRange('A2:B').getValues(); // Fetch Name (A) and Email (B)
   
   threads.forEach(thread => {
     const messages = thread.getMessages();
@@ -38,41 +38,34 @@ function collectEmailResponses() {
       // Find participant name associated with sender's email
       let senderName = "";
       participantsData.forEach(participant => {
-        if (participant[0] === senderEmail) {
-          senderName = participant[1]; // Assign participant name
+        if (participant[1] === senderEmail) { // Check against Email (column B)
+          senderName = participant[0]; // Assign participant name from Name (column A)
           return; // Exit forEach loop
         }
       });
       
       if (senderName) {
         // Check if response is already recorded
-        const data = responsesSheet.getRange('A2:E').getValues(); // Adjust range as per your sheet structure
-        const existingResponse = data.find(row => row[2] === senderName && row[3] === response);
+        const data = responsesSheet.getDataRange().getValues(); // Fetch all data
+        const headers = data[0]; // Assuming first row is headers
         
-        if (!existingResponse) {
+        // Find index of participant column
+        const columnIndex = headers.indexOf(senderName);
+        
+        if (columnIndex !== -1) {
           const lastRow = responsesSheet.getLastRow() + 1;
           responsesSheet.getRange(lastRow, 1).setValue(new Date()); // Column A: Date
           responsesSheet.getRange(lastRow, 2).setValue(responsesSheet.getRange(lastRow - 1, 2).getValue()); // Column B: Question
-          switch (senderName) {
-            case "Lalitha":
-              responsesSheet.getRange(lastRow, 3).setValue(response); // Column C: Lalitha's response
-              break;
-            case "Jeong Seo Ah":
-              responsesSheet.getRange(lastRow, 4).setValue(response); // Column D: Jeong Seo Ah's response
-              break;
-            case "Xu xin":
-              responsesSheet.getRange(lastRow, 5).setValue(response); // Column E: Xu xin's response
-              break;
-            default:
-              // Handle other participants if needed
-              break;
-          }
+          
+          // Set response in the correct column dynamically
+          responsesSheet.getRange(lastRow, columnIndex + 1).setValue(response); // columnIndex + 1 to account for Date and Question columns
+        } else {
+          Logger.log(`Participant ${senderName} not found in headers.`);
         }
       }
     });
   });
 }
-
 
 // Function to send consolidated email
 function sendConsolidatedEmail() {
