@@ -19,7 +19,8 @@ https://docs.google.com/spreadsheets/d/1n4YLDlD8ItIqovygIw7n90JhTfPBJ82pepECaB7r
 2. _sendWeeklyPrompts_ works fine and it sends the email
 3. _collectEmailResponses_ - Here is the issue, the question and date is stored but replies to the email is not stored.
    _A possible issues_ :
-     Every email usually has a name associated to it, if the function matches the replies based on it - it could be an error. For ex: My email name associated is Lalitha A R, but the name stored in sheets is Lalitha. Is it the issue ?  
+     Every email usually has a name associated to it, if the function matches the replies based on it - it could be an error. For ex: My email name associated is Lalitha A R, but the name stored in sheets is Lalitha. Is it the issue ?
+4. _sendConsolidatedEmail_ works fine and sends the email as a collection of all responses for the question
 
 ## how-it-works
 
